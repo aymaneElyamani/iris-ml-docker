@@ -1,0 +1,23 @@
+services:
+
+  trainer:
+    build:
+      context: .
+      dockerfile: Dockerfile.train.optimized
+    image: iris-train:optimized
+    volumes:
+      - iris-model:/model
+
+  inference:
+    build:
+      context: .
+      dockerfile: Dockerfile.inference.optimized
+    image: iris-inference:optimized
+    volumes:
+      - iris-model:/model
+    depends_on:
+      trainer:
+        condition: service_completed_successfully
+
+volumes:
+  iris-model:
