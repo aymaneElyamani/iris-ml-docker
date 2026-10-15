@@ -1,23 +1,24 @@
 services:
-
-  trainer:
+  api:
     build:
       context: .
-      dockerfile: Dockerfile.train.optimized
-    image: iris-train:optimized
-    volumes:
-      - iris-model:/model
-
-  inference:
-    build:
-      context: .
-      dockerfile: Dockerfile.inference.optimized
-    image: iris-inference:optimized
-    volumes:
-      - iris-model:/model
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
     depends_on:
-      trainer:
-        condition: service_completed_successfully
+      base:
+        condition: service_healthy
+
+  base:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
 volumes:
-  iris-model:
+  redis-data:
