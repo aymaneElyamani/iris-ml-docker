@@ -7,6 +7,7 @@
 \usepackage[a4paper,margin=2.5cm]{geometry}
 \usepackage{xcolor}
 \usepackage{hyperref}
+\usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{enumitem}
 \usepackage{listings}
@@ -92,23 +93,23 @@ fois que Redis répond correctement à la commande \texttt{PING}.
 \section{Implémentation de l'API}
 
 Le fichier principal est \texttt{src/app.py}. Le modèle est entraîné à partir
-de \texttt{load\_iris} avec une régression logistique :
+de \texttt{load\_iris} avec une régression logistique. Le code correspondant
+dans le projet est présenté ci-dessous :
 
-\begin{lstlisting}[language=Python]
-iris = load_iris()
-model = LogisticRegression(max_iter=300, random_state=42)
-model.fit(iris.data, iris.target)
-\end{lstlisting}
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.92\textwidth]{images/01_load_iris.png}
+  \caption{Chargement des données Iris et entraînement du modèle}
+\end{figure}
 
-La requête de prédiction doit contenir exactement quatre mesures :
+La requête de prédiction doit contenir exactement quatre mesures. La définition
+réelle de \texttt{PredictionRequest} est illustrée ci-dessous :
 
-\begin{lstlisting}[language=Python]
-class PredictionRequest(BaseModel):
-    features: Annotated[
-        list[float],
-        Field(min_length=4, max_length=4),
-    ]
-\end{lstlisting}
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.92\textwidth]{images/02_PredictionRequest.png}
+  \caption{Validation des données reçues par l'API}
+\end{figure}
 
 Lorsqu'une prédiction réussit, l'API appelle \texttt{INCR} sur la clé Redis
 \texttt{predictions}. Cette opération est atomique et renvoie directement la
@@ -171,24 +172,11 @@ FastAPI nommé \texttt{app}.
 
 Le fichier \texttt{docker-compose.yml} définit les deux services et le volume :
 
-\begin{lstlisting}
-services:
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
-    depends_on:
-      base:
-        condition: service_healthy
-
-  base:
-    image: redis:7-alpine
-    command: redis-server --appendonly yes
-    volumes:
-      - redis-data:/data
-\end{lstlisting}
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.92\textwidth]{images/03_docker-compose.yml.png}
+  \caption{Configuration Docker Compose des services API et Redis}
+\end{figure}
 
 Avant le démarrage, la configuration a été vérifiée avec :
 
