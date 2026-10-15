@@ -28,7 +28,7 @@ The API waits for Redis to pass its healthcheck before starting.
 ```
 iris-ml-docker/
 ├── src/
-│   ├── api.py                       # HTTP prediction API
+│   ├── app.py                       # HTTP prediction API
 │   ├── train.py                     # Original training script
 │   └── inference.py                 # Original inference script
 ├── Dockerfile                       # API image
